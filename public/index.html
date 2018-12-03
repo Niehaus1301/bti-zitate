@@ -17,6 +17,9 @@
         messagingSenderId: "545154407613"
       };
       firebase.initializeApp(config);
+
+      var db = firebase.firestore();
+      db.settings({ timestampsInSnapshots: true });
     </script>
 
     <link rel="stylesheet" href="style.css">
@@ -35,7 +38,7 @@
       document.querySelector('#title').innerHTML = "...";
       firebase.auth().onAuthStateChanged(function(user) {
         if (!(user)) {
-          document.querySelector('#title').innerHTML = "Authentifiziere...";
+          document.querySelector('#title').innerHTML = "Login...";
           var provider = new firebase.auth.GoogleAuthProvider();
           firebase.auth().signInWithRedirect(provider).then(function(result) {
             var token = result.credential.accessToken;
@@ -44,13 +47,62 @@
             console.log("Error code: " + error.code + "\nError message: " + error.message + "\nError email: " + error.email);
           });
         } else {
-          document.querySelector('#title').innerHTML = "BTI Zitate";
-          console.log(user)
+          db.collection("users").doc(user.uid).onSnapshot(function(doc) {
+            if (doc.exists) {
+              if (doc.data().enabled == false) {
+                document.querySelector('#title').innerHTML = "Nein!";
+              } else {
+                document.querySelector('#title').innerHTML = "BTI Zitate";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              }
+            } else {
+              document.querySelector('#title').innerHTML = "Nein!";
+            }
+          });
         }
-
       });
-
-
     </script>
   </body>
 </html>
