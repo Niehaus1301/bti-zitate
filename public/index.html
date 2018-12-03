@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BTI Zitate</title>
 
-    <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-firestore.js"></script>
     <script>
       // Initialize Firebase
       var config = {
@@ -28,11 +30,13 @@
 
     <h1 id="title"></h1>
     <div class="content">
-      <form id="add-cafe-form"></form>
-      <ul id="cafe-list"></ul>
+      <form id="add-quote-form">
+        <input type="text" name="quote" placeholder="Zitat">
+        <input type="text" name="teacher" placeholder="Lehrer">
+        <button>Zitieren</button>
+      </form>
+      <ul id="quotes-list"></ul>
     </div>
-
-
 
     <script>
       document.querySelector('#title').innerHTML = "...";
@@ -54,12 +58,59 @@
               } else {
                 document.querySelector('#title').innerHTML = "BTI Zitate";
 
+                const quotesList = document.querySelector('#quotes-list');
+                const form = document.querySelector('#add-quote-form');
 
+                // create element & render quotes
+                function renderQuotes(doc){
+                    let li = document.createElement('li');
+                    let quote = document.createElement('span');
+                    let teacher = document.createElement('span');
+                    let cross = document.createElement('div');
 
+                    li.setAttribute('data-id', doc.id);
+                    quote.textContent = '\"' + doc.data().quote + '\"';
+                    teacher.textContent = '- ' + doc.data().teacher;
+                    cross.textContent = 'x';
 
+                    li.appendChild(quote);
+                    li.appendChild(teacher);
+                    li.appendChild(cross);
 
+                    quotesList.appendChild(li);
 
+                    // deleting data
+                    cross.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        let id = e.target.parentElement.getAttribute('data-id');
+                        db.collection('quotes').doc(id).delete();
+                    });
+                }
 
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    db.collection('quotes').add({
+                        quote: form.quote.value,
+                        teacher: form.teacher.value,
+                        by: user.displayName
+                    });
+                    form.quote.value = '';
+                    form.teacher.value = '';
+                });
+
+                // real-time listener
+                db.collection('quotes').orderBy('teacher').onSnapshot(snapshot => {
+                    let changes = snapshot.docChanges();
+                    changes.forEach(change => {
+                        console.log(change.doc.data());
+                        if(change.type == 'added'){
+                            renderQuotes(change.doc);
+                        } else if (change.type == 'removed'){
+                            let li = quotesList.querySelector('[data-id=' + change.doc.id + ']');
+                            quotesList.removeChild(li);
+                        }
+                    });
+                });
 
 
 
