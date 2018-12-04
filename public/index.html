@@ -75,7 +75,9 @@
 
                     li.appendChild(quote);
                     li.appendChild(teacher);
-                    li.appendChild(cross);
+                    if (doc.data().by == user.uid) {
+                      li.appendChild(cross);
+                    }
 
                     quotesList.appendChild(li);
 
@@ -92,7 +94,7 @@
                     db.collection('quotes').add({
                         quote: form.quote.value,
                         teacher: form.teacher.value,
-                        by: user.displayName
+                        by: user.uid
                     });
                     form.quote.value = '';
                     form.teacher.value = '';
@@ -111,42 +113,6 @@
                         }
                     });
                 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
               }
             } else {
               document.querySelector('#title').innerHTML = "Nein!";
