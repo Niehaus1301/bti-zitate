@@ -31,10 +31,11 @@
     <h1 id="title"></h1>
     <div class="content">
       <ul id="quotes-list"></ul>
+      <hr>
       <form id="add-quote-form">
         <input type="text" name="quote" placeholder="Zitat">
         <input type="text" name="teacher" placeholder="Lehrer">
-        <button>Zitieren</button>
+        <button>+</button>
       </form>
     </div>
 
@@ -67,6 +68,8 @@
                     let quote = document.createElement('span');
                     let teacher = document.createElement('span');
                     let cross = document.createElement('div');
+
+                    li.className = "quote"
 
                     li.setAttribute('data-id', doc.id);
                     quote.textContent = '\"' + doc.data().quote + '\"';
